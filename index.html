@@ -28,10 +28,7 @@ console.error = (function(old) {
 </script>  
   
 <div id="errors"></div>
-
-<div id="root">
-  <div id="game"></div>
-</div>
+<div id="root"></div>
 
 
 <script type="text/babel">
@@ -43,13 +40,21 @@ const CARDS = [
   {path:"img/3.png", data:"3"},
   {path:"img/3.png", data:"3"},
   {path:"img/4.png", data:"4"},
-  {path:"img/4.png", data:"4"}
+  {path:"img/4.png", data:"4"},
+  {path:"img/5.png", data:"5"},
+  {path:"img/5.png", data:"5"},
+  {path:"img/6.png", data:"6"},
+  {path:"img/6.png", data:"6"}
 ];
 
 class Game extends React.Component{
   render(){
     return(
-      <Board />
+      <div id="game">
+        <div id="board">
+          <Board />
+        </div>
+      </div>
     );
   }
 }
@@ -68,14 +73,14 @@ class Card extends React.Component{
 render(){
     return(
       <div className="card" key={this.props.index}>
-        <img className="card-front" src={this.props.path} data-card={this.props.data} />
-        <img className="card-back" src="img/cover.png" data-card={this.props.data} />
+        <img className="card-front" src={this.props.path} data-card={this.props.data} draggable="false" />
+        <img className="card-back" src="img/cover.png" data-card={this.props.data} draggable="false" />
       </div>
     );
   }
 }
 
-ReactDOM.render(<Game />, document.getElementById("game"));
+ReactDOM.render(<Game />, document.getElementById("root"));
 </script>
 
 </body>

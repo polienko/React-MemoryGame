@@ -11,3 +11,33 @@ div#errors {
   padding: 20px;
   white-space: pre-wrap;
 }
+
+#board{
+  display:grid;
+  grid-template-columns: repeat(4, auto);
+  grid-template-rows: repeat(5, 88px);
+  max-width:376px;
+}
+
+img{
+  max-width: 100%;
+  height:auto;
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  border: 1px solid #49494b;
+  border-radius: 5px;
+}
+
+.card {
+  transform: scale(1);
+  transition: transform .1s;
+  cursor:pointer;
+}
+
+.card:active {
+  transform: scale(0.97);
+  transition: transform .1s;
+}
