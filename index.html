@@ -35,11 +35,42 @@ console.error = (function(old) {
 
 
 <script type="text/babel">
+const CARDS = [
+  {path:"img/1.png", data:"1"},
+  {path:"img/1.png", data:"1"},
+  {path:"img/2.png", data:"2"},
+  {path:"img/2.png", data:"2"},
+  {path:"img/3.png", data:"3"},
+  {path:"img/3.png", data:"3"},
+  {path:"img/4.png", data:"4"},
+  {path:"img/4.png", data:"4"}
+];
 
 class Game extends React.Component{
   render(){
     return(
-      <div>Hello World!</div>
+      <Board />
+    );
+  }
+}
+
+class Board extends React.Component{
+  render(){
+    return(
+      CARDS.map((card,index) => (
+        <Card index={index} path={card.path} data={card.data} />
+      ))
+    );
+  }
+}
+
+class Card extends React.Component{
+render(){
+    return(
+      <div className="card" key={this.props.index}>
+        <img className="card-front" src={this.props.path} data-card={this.props.data} />
+        <img className="card-back" src="img/cover.png" data-card={this.props.data} />
+      </div>
     );
   }
 }
