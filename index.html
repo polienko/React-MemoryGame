@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>React Memory Game</title>
+  <link rel="stylesheet" href="styles.css?002">
+
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body>
+
+<script>
+window.onerror = function(message, source, line, col, error) {
+  var text = error ? error.stack || error : message + ' (at ' + source + ':' + line + ':' + col + ')';
+  errors.textContent += text + '\n';
+  errors.style.display = '';
+};
+console.error = (function(old) {
+  return function error() {
+    errors.textContent += Array.prototype.slice.call(arguments).join(' ') + '\n';
+    errors.style.display = '';
+    old.apply(this, arguments);
+  }
+})(console.error);
+</script>  
+  
+<div id="errors"></div>
+
+<div id="root">
+  <div id="game"></div>
+</div>
+
+
+<script type="text/babel">
+
+class Game extends React.Component{
+  render(){
+    return(
+      <div>Hello World!</div>
+    );
+  }
+}
+
+ReactDOM.render(<Game />, document.getElementById("game"));
+</script>
+
+</body>
+</html>
