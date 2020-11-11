@@ -60,19 +60,43 @@ class Game extends React.Component{
 }
 
 class Board extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      cardsShown:0
+    }
+    this.boardHandler = this.boardHandler.bind(this);
+  }
+  boardHandler(){
+    this.state.cardsShown = this.state.cardsShown + 1;
+    console.log(this.state.cardsShown);
+  }
   render(){
-    return(
+    return(      
       CARDS.map((card,index) => (
-        <Card index={index} path={card.path} data={card.data} />
+        <Card index={index} path={card.path} data={card.data} boardHandler={this.boardHandler} />
       ))
     );
   }
 }
 
 class Card extends React.Component{
-render(){
+  constructor(props){
+    super(props);
+    this.state = {
+      class: "card"
+    }
+    this.cardHandler = this.cardHandler.bind(this);
+  }
+  cardHandler(){
+    this.props.boardHandler();
+    this.state.class == "card" ? 
+      this.setState({class:"card flip"}) : 
+      this.setState({class:"card"});
+  }  
+  render(){
     return(
-      <div className="card" key={this.props.index}>
+      <div className={this.state.class} key={this.props.index} onClick={this.cardHandler} >
         <img className="card-front" src={this.props.path} data-card={this.props.data} draggable="false" />
         <img className="card-back" src="img/cover.png" data-card={this.props.data} draggable="false" />
       </div>

@@ -41,3 +41,13 @@ img{
   transform: scale(0.97);
   transition: transform .1s;
 }
+
+.card-front {
+  transform: rotateY(180deg);
+  cursor:default;
+}
+
+.card.flip {
+  transform: rotateY(180deg);
+  transform-style: preserve-3d;
+}
