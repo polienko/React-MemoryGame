@@ -16,12 +16,12 @@
 window.onerror = function(message, source, line, col, error) {
   var text = error ? error.stack || error : message + ' (at ' + source + ':' + line + ':' + col + ')';
   errors.textContent += text + '\n';
-  errors.style.display = '';
+  errors.style.display = 'block';
 };
 console.error = (function(old) {
   return function error() {
     errors.textContent += Array.prototype.slice.call(arguments).join(' ') + '\n';
-    errors.style.display = '';
+    errors.style.display = 'block';
     old.apply(this, arguments);
   }
 })(console.error);
@@ -74,7 +74,7 @@ class Board extends React.Component{
   render(){
     return(      
       CARDS.map((card,index) => (
-        <Card index={index} path={card.path} data={card.data} boardHandler={this.boardHandler} />
+        <Card index={index} path={card.path} data={card.data} key={index} boardHandler={this.boardHandler} />
       ))
     );
   }
