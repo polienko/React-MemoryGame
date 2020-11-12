@@ -50,4 +50,11 @@ img{
 .card.flip {
   transform: rotateY(180deg);
   transform-style: preserve-3d;
+  cursor:default;
+}
+
+.card.match{
+  transform: rotateY(180deg);
+  transform-style: preserve-3d;
+  cursor:default;
 }
