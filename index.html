@@ -33,6 +33,9 @@ console.error = (function(old) {
 
 <script type="text/babel">
 const SHOW_SECOND_CARD_TIME = 500;
+const SCORE_PLUS = 50;
+const SCORE_MINUS = -10;
+
 let BOARD_LOCKED = false;
 let CARDS = [
   {path:"img/1.png", data:"1", id:"1a"},
@@ -48,27 +51,39 @@ let CARDS = [
   {path:"img/6.png", data:"6", id:"6a"},
   {path:"img/6.png", data:"6", id:"6b"}
 ];
-
-class Game extends React.Component{
-  constructor(props){
-    super(props);
-    this.shuffleCards = this.shuffleCards.bind(this);
-  }
-  shuffleCards(a) {
+function shuffleCards(a) {
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
 }
+shuffleCards(CARDS);
+
+
+class Game extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      score:0
+    }
+    this.updateScore = this.updateScore.bind(this);
+  }
+  updateScore(value){
+    if (value > 0) {
+      this.setState({score: this.state.score + value});
+    } else {
+      this.setState({score: this.state.score - Math.abs(value)});
+    }
+  }
+
   render(){
-  console.log(CARDS);
-  this.shuffleCards(CARDS);
   console.log(CARDS);
     return(
       <div id="game">
+        <div id="score">SCORE:{this.state.score}</div>
         <div id="board">
-          <Board />
+          <Board updateScore={this.updateScore} />
         </div>
       </div>
     );
@@ -105,7 +120,8 @@ class Board extends React.Component{
   render(){
     return(   
       CARDS.map((card,index) => (
-          <Card index={index} path={card.path} data={card.data} id={card.id} key={index} boardHandler={this.boardHandler} /> 
+          <Card index={index} path={card.path} data={card.data} id={card.id} 
+          key={index} boardHandler={this.boardHandler} updateScore={this.props.updateScore} /> 
           ))
     );
   }
@@ -135,10 +151,12 @@ class Card extends React.Component{
       let previousCard = boardHandlerResult;
       if (previousCard.props.data == this.props.data) {
         previousCard.setState({class:"card match"});
-        this.setState({class:"card match"}); 
+        this.setState({class:"card match"});
+        this.props.updateScore(SCORE_PLUS);
       } else {
         BOARD_LOCKED = true;
         this.setState({class:"card flip"});
+        this.props.updateScore(SCORE_MINUS);
         setTimeout(() => {
           previousCard.setState({class:"card"}); 
           this.setState({class:"card"});
