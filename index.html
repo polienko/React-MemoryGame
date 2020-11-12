@@ -34,7 +34,7 @@ console.error = (function(old) {
 <script type="text/babel">
 const SHOW_SECOND_CARD_TIME = 500;
 let BOARD_LOCKED = false;
-const CARDS = [
+let CARDS = [
   {path:"img/1.png", data:"1", id:"1a"},
   {path:"img/1.png", data:"1", id:"1b"},
   {path:"img/2.png", data:"2", id:"2a"},
@@ -50,7 +50,21 @@ const CARDS = [
 ];
 
 class Game extends React.Component{
+  constructor(props){
+    super(props);
+    this.shuffleCards = this.shuffleCards.bind(this);
+  }
+  shuffleCards(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
   render(){
+  console.log(CARDS);
+  this.shuffleCards(CARDS);
+  console.log(CARDS);
     return(
       <div id="game">
         <div id="board">
@@ -81,9 +95,9 @@ class Board extends React.Component{
     } else if (this.state.clickCounter == 2) {
       this.setState({clickCounter:0});
       if (this.state.previousCard.props.data == card.props.data && this.state.previousCard.props.id != card.props.id) {
-        return [this.state.previousCard, "BOARD_UNLOCKED"]; // MATCH -> return PREV CARD, BOARD STATE
+        return this.state.previousCard; // MATCH -> return PREV CARD
       } else {
-        return [this.state.previousCard, "BOARD_LOCKED"]; // NOT MATCH -> return PREV CARD, BOARD STATE
+        return this.state.previousCard; // NOT MATCH -> return PREV CARD
       }
     }
   }
@@ -117,8 +131,8 @@ class Card extends React.Component{
 
     if (boardHandlerResult == "FIRST CARD"){
       this.state.class == "card" ? this.setState({class:"card flip"}) : this.setState({class:this.state.class});
-    } else if (typeof boardHandlerResult[0] === 'object' && boardHandlerResult[0] !== null) {
-      let previousCard = boardHandlerResult[0];
+    } else if (typeof boardHandlerResult === 'object' && boardHandlerResult !== null) {
+      let previousCard = boardHandlerResult;
       if (previousCard.props.data == this.props.data) {
         previousCard.setState({class:"card match"});
         this.setState({class:"card match"}); 
