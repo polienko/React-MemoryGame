@@ -57,7 +57,6 @@ function shuffleCards(a) {
     }
     return a;
 }
-shuffleCards(CARDS);
 
 if (sessionStorage.getItem('score') == null){
   sessionStorage.setItem('score',"")
@@ -67,10 +66,21 @@ class Game extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      score:0
+      score:0,
+      gameCount:0
     }
     this.updateScore = this.updateScore.bind(this);
+    this.newGame = this.newGame.bind(this);
+    shuffleCards(CARDS);
   }
+  
+  newGame(){
+    this.setState({gameCount: this.state.gameCount + 1});
+    this.setState({score:0});
+    MATCH_COUNTER = 0;
+    shuffleCards(CARDS);
+  }
+
   updateScore(value){
     if (value > 0) {
       this.setState({score: this.state.score + value});
@@ -80,12 +90,12 @@ class Game extends React.Component{
   }
 
   render(){
-  console.log(CARDS);
     return(
       <div id="game">
         <div id="score-block">SCORE:<span id="score">{this.state.score}</span></div>
+        <div id="new-game-block"><input type="button" value="NEW" onClick={this.newGame} /></div>
         <div id="board">
-          <Board updateScore={this.updateScore} />
+          <Board updateScore={this.updateScore} key={this.state.gameCount}/>
         </div>
       </div>
     );
