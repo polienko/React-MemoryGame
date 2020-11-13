@@ -45,12 +45,11 @@ let CARDS = [
   {path:"img/3.png", data:"3", id:"3a"},
   {path:"img/3.png", data:"3", id:"3b"},
   {path:"img/4.png", data:"4", id:"4a"},
-  {path:"img/4.png", data:"4", id:"4b"},
-  {path:"img/5.png", data:"5", id:"5a"},
-  {path:"img/5.png", data:"5", id:"5b"},
-  {path:"img/6.png", data:"6", id:"6a"},
-  {path:"img/6.png", data:"6", id:"6b"}
+  {path:"img/4.png", data:"4", id:"4b"}
 ];
+let MATCHES_TO_WIN = CARDS.length / 2;
+let MATCH_COUNTER = 0;
+
 function shuffleCards(a) {
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -60,6 +59,9 @@ function shuffleCards(a) {
 }
 shuffleCards(CARDS);
 
+if (sessionStorage.getItem('score') == null){
+  sessionStorage.setItem('score',"")
+}
 
 class Game extends React.Component{
   constructor(props){
@@ -81,7 +83,7 @@ class Game extends React.Component{
   console.log(CARDS);
     return(
       <div id="game">
-        <div id="score">SCORE:{this.state.score}</div>
+        <div id="score-block">SCORE:<span id="score">{this.state.score}</span></div>
         <div id="board">
           <Board updateScore={this.updateScore} />
         </div>
@@ -153,6 +155,16 @@ class Card extends React.Component{
         previousCard.setState({class:"card match"});
         this.setState({class:"card match"});
         this.props.updateScore(SCORE_PLUS);
+        MATCH_COUNTER += 1;
+        if (MATCH_COUNTER == MATCHES_TO_WIN){
+          let currentScore = parseInt(document.getElementById("score").innerText) + SCORE_PLUS;
+          if (sessionStorage.getItem('score') == ""){
+            sessionStorage.setItem('score', currentScore);
+          } else {
+            sessionStorage.setItem('score', sessionStorage.getItem('score') + ";" + currentScore);
+          }
+          console.log("SCORE: "+sessionStorage.getItem('score'));
+        }
       } else {
         BOARD_LOCKED = true;
         this.setState({class:"card flip"});
