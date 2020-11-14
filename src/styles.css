@@ -29,6 +29,8 @@ img{
   position: absolute;
   border: 1px solid #49494b;
   border-radius: 5px;
+  box-sizing: border-box; /* TO NOT OVERLAP */
+  -moz-backface-visibility: hidden; /* FIX MOBILE FIREFOX */
 }
 
 .card {
