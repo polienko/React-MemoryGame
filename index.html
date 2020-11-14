@@ -37,7 +37,7 @@ const SCORE_PLUS = 50;
 const SCORE_MINUS = -10;
 
 let BOARD_LOCKED = false;
-let CARDS = [
+let CARD_DECK = [
   {path:"img/1.png", data:"1", id:"1a"},
   {path:"img/1.png", data:"1", id:"1b"},
   {path:"img/2.png", data:"2", id:"2a"},
@@ -45,8 +45,17 @@ let CARDS = [
   {path:"img/3.png", data:"3", id:"3a"},
   {path:"img/3.png", data:"3", id:"3b"},
   {path:"img/4.png", data:"4", id:"4a"},
-  {path:"img/4.png", data:"4", id:"4b"}
+  {path:"img/4.png", data:"4", id:"4b"},
+  {path:"img/5.png", data:"5", id:"5a"},
+  {path:"img/5.png", data:"5", id:"5b"},
+  {path:"img/6.png", data:"6", id:"6a"},
+  {path:"img/6.png", data:"6", id:"6b"},
+  {path:"img/7.png", data:"7", id:"7a"},
+  {path:"img/7.png", data:"7", id:"7b"},
+  {path:"img/8.png", data:"8", id:"8a"},
+  {path:"img/8.png", data:"8", id:"8b"},
 ];
+let CARDS = CARD_DECK.slice(0,16);
 let MATCHES_TO_WIN = CARDS.length / 2;
 let MATCH_COUNTER = 0;
 
@@ -74,7 +83,12 @@ class Game extends React.Component{
     shuffleCards(CARDS);
   }
   
-  newGame(){
+  newGame(event){
+    event.preventDefault();
+    let gamemode = event.target.elements['gamemode'].value * 2;
+    CARDS = CARD_DECK.slice(0,gamemode);
+    MATCHES_TO_WIN = CARDS.length / 2;
+    console.log(CARDS);
     this.setState({gameCount: this.state.gameCount + 1});
     this.setState({score:0});
     MATCH_COUNTER = 0;
@@ -93,7 +107,17 @@ class Game extends React.Component{
     return(
       <div id="game">
         <div id="score-block">SCORE:<span id="score">{this.state.score}</span></div>
-        <div id="new-game-block"><input type="button" value="NEW" onClick={this.newGame} /></div>
+        <div id="new-game-block">
+          <form onSubmit={this.newGame}>
+            <select name="gamemode">
+              <option value="8">8 пар</option>
+              <option value="6">6 пар</option>
+              <option value="4">4 пары</option>
+            </select>
+            <input type="submit" value="NEW" />
+          </form>
+        </div>
+        <br />
         <div id="board">
           <Board updateScore={this.updateScore} key={this.state.gameCount}/>
         </div>
