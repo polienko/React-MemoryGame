@@ -1,60 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>React Memory Game</title>
-  <link rel="stylesheet" href="styles.css?002">
-
-  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-</head>
-<body>
-
-<script>
-window.onerror = function(message, source, line, col, error) {
-  var text = error ? error.stack || error : message + ' (at ' + source + ':' + line + ':' + col + ')';
-  errors.textContent += text + '\n';
-  errors.style.display = 'block';
-};
-console.error = (function(old) {
-  return function error() {
-    errors.textContent += Array.prototype.slice.call(arguments).join(' ') + '\n';
-    errors.style.display = 'block';
-    old.apply(this, arguments);
-  }
-})(console.error);
-</script>  
-  
-<div id="errors"></div>
-<div id="root"></div>
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './styles.css';
+//import App from './App';
+import img_cover from "./img/cover.png";
+import img_1 from "./img/1.png";
+import img_2 from "./img/2.png";
+import img_3 from "./img/3.png";
+import img_4 from "./img/4.png";
+import img_5 from "./img/5.png";
+import img_6 from "./img/6.png";
+import img_7 from "./img/7.png";
+import img_8 from "./img/8.png";
 
 
-<script type="text/babel">
 const SHOW_SECOND_CARD_TIME = 500;
 const SCORE_PLUS = 50;
 const SCORE_MINUS = -10;
 
 let BOARD_LOCKED = false;
+
 let CARD_DECK = [
-  {path:"img/1.png", data:"1", id:"1a"},
-  {path:"img/1.png", data:"1", id:"1b"},
-  {path:"img/2.png", data:"2", id:"2a"},
-  {path:"img/2.png", data:"2", id:"2b"},
-  {path:"img/3.png", data:"3", id:"3a"},
-  {path:"img/3.png", data:"3", id:"3b"},
-  {path:"img/4.png", data:"4", id:"4a"},
-  {path:"img/4.png", data:"4", id:"4b"},
-  {path:"img/5.png", data:"5", id:"5a"},
-  {path:"img/5.png", data:"5", id:"5b"},
-  {path:"img/6.png", data:"6", id:"6a"},
-  {path:"img/6.png", data:"6", id:"6b"},
-  {path:"img/7.png", data:"7", id:"7a"},
-  {path:"img/7.png", data:"7", id:"7b"},
-  {path:"img/8.png", data:"8", id:"8a"},
-  {path:"img/8.png", data:"8", id:"8b"},
+  {path:img_1, data:"1", id:"1a"},
+  {path:img_1, data:"1", id:"1b"},
+  {path:img_2, data:"2", id:"2a"},
+  {path:img_2, data:"2", id:"2b"},
+  {path:img_3, data:"3", id:"3a"},
+  {path:img_3, data:"3", id:"3b"},
+  {path:img_4, data:"4", id:"4a"},
+  {path:img_4, data:"4", id:"4b"},
+  {path:img_5, data:"5", id:"5a"},
+  {path:img_5, data:"5", id:"5b"},
+  {path:img_6, data:"6", id:"6a"},
+  {path:img_6, data:"6", id:"6b"},
+  {path:img_7, data:"7", id:"7a"},
+  {path:img_7, data:"7", id:"7b"},
+  {path:img_8, data:"8", id:"8a"},
+  {path:img_8, data:"8", id:"8b"},
 ];
+
 let CARDS = CARD_DECK.slice(0,16);
 let MATCHES_TO_WIN = CARDS.length / 2;
 let MATCH_COUNTER = 0;
@@ -110,9 +93,9 @@ class Game extends React.Component{
         <div id="new-game-block">
           <form onSubmit={this.newGame}>
             <select name="gamemode">
-              <option value="8">8 пар</option>
-              <option value="6">6 пар</option>
-              <option value="4">4 пары</option>
+              <option value="8">8 pairs</option>
+              <option value="6">6 pairs</option>
+              <option value="4">4 pairs</option>
             </select>
             <input type="submit" value="NEW" />
           </form>
@@ -215,14 +198,10 @@ class Card extends React.Component{
     return(
       <div className={this.state.class} key={this.props.index} onClick={this.cardHandler} >
         <img className="card-front" src={this.props.path} data-card={this.props.data} draggable="false" />
-        <img className="card-back" src="img/cover.png" data-card={this.props.data} draggable="false" />
+        <img className="card-back" src={img_cover} alt="" data-card={this.props.data} draggable="false" />
       </div>
     );
   }
 }
 
 ReactDOM.render(<Game />, document.getElementById("root"));
-</script>
-
-</body>
-</html>
