@@ -1,6 +1,6 @@
 # Demo
 
-View demo: [polienko.github.io/react-memory-game](polienko.github.io/react-memory-game)
+View demo: [polienko.github.io/react-memory-game](http://polienko.github.io/react-memory-game/)
 
 # Getting Started with Create React App
 
