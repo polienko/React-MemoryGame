@@ -29,11 +29,21 @@ class Board extends React.Component{
     }
   
     render(){
-      let CARDS = this.props.CARDS.CARDS;
+      let CARDS = this.props.CARDS;
+      let MATCHES_TO_WIN = CARDS.length / 2;
+
       return( CARDS.map((card,index) => (
-        <Card index={index} path={card.path} data={card.data} id={card.id} 
-        key={index} boardHandler={this.boardHandler} updateScore={this.props.updateScore} 
-        CARDS={CARDS} MATCH_COUNTER={this.props.MATCH_COUNTER} />
+        <Card 
+        index={index} 
+        path={card.path} 
+        data={card.data} 
+        id={card.id} 
+        key={index} 
+        boardHandler={this.boardHandler} 
+        updateScore={this.props.updateScore} 
+        MATCHES_TO_WIN={MATCHES_TO_WIN} 
+        matchCounter={this.props.matchCounter}
+        />
         ))
       );
     }
