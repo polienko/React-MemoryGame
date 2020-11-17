@@ -39,12 +39,11 @@ class Card extends React.Component{
           
           if (this.props.matchCounter() === this.state.MATCHES_TO_WIN){
             let currentScore = parseInt(document.getElementById("score").innerText) + SCORE_PLUS;
-            if (sessionStorage.getItem('score') === ""){
-              sessionStorage.setItem('score', currentScore);
-            } else {
-              sessionStorage.setItem('score', sessionStorage.getItem('score') + ";" + currentScore);
+            if (currentScore > parseInt(localStorage.getItem(this.state.MATCHES_TO_WIN))){
+              console.log("current is bigger than "+localStorage.getItem(this.state.MATCHES_TO_WIN));
+              localStorage.setItem(this.state.MATCHES_TO_WIN,currentScore);
+              this.props.updateBestScore(currentScore);
             }
-            console.log("SCORE: "+sessionStorage.getItem('score'));
           }
         } else {
           BOARD_LOCKED = true;

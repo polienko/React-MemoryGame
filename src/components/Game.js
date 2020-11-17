@@ -68,7 +68,14 @@ function shuffleCards(a) {
 }
 
 let CARDS = CARD_DECK.slice(0,8);
-shuffleCards(CARDS);
+CARDS = shuffleCards(CARDS);
+let defaultGameMode = CARDS.length / 2;
+
+//localStorage.clear(); //FOR DEBUG PURPOSES
+
+if (localStorage.getItem(defaultGameMode) === null){
+  localStorage.setItem(defaultGameMode,"0");
+}
 
 class Game extends React.Component{
     constructor(props){
@@ -76,24 +83,47 @@ class Game extends React.Component{
       this.state = {
         score:0,
         gameCount:0,
+        gameMode:CARDS.length / 2,
+        bestScore:localStorage.getItem(defaultGameMode),
         MATCH_COUNTER: 1,
         CARDS: CARDS
       }
+
       this.updateScore = this.updateScore.bind(this);
+      this.updateBestScore = this.updateBestScore.bind(this);
       this.newGame = this.newGame.bind(this);
       this.matchCounter = this.matchCounter.bind(this);
+
+      console.log("----------------- localStorage");
+      for (let i = 0; i < localStorage.length; i++){
+        console.log(localStorage.key(i) + "=" + localStorage.getItem(localStorage.key(i)) + "");
+      }
+      console.log("----------------- localStorage");       
     }
     
     newGame(event){
       event.preventDefault();
-      let gamemode = event.target.elements['gamemode'].value * 2;
-      CARDS = CARD_DECK.slice(0,gamemode);
-      console.log(this.state.CARDS);
+      let newGameMode = event.target.elements['gamemode'].value;
+      CARDS = CARD_DECK.slice(0,newGameMode*2);
+      CARDS = shuffleCards(CARDS);
+
       this.setState({gameCount: this.state.gameCount + 1});
+      this.setState({gameMode: CARDS.length / 2});
       this.setState({score: 0});
       this.setState({MATCH_COUNTER: 1});
-      shuffleCards(CARDS);
       this.setState({CARDS:CARDS})
+      if (localStorage.getItem(newGameMode) === null){
+        localStorage.setItem(newGameMode,"0");
+        this.setState({bestScore: localStorage.getItem(newGameMode)});
+      } else {
+        this.setState({bestScore: localStorage.getItem(newGameMode)});
+      }
+
+      console.log("----------------- localStorage");
+      for (let i = 0; i < localStorage.length; i++){
+        console.log(localStorage.key(i) + "=" + localStorage.getItem(localStorage.key(i)) + "");
+      }
+      console.log("----------------- localStorage");      
     }
   
     updateScore(value){
@@ -101,6 +131,12 @@ class Game extends React.Component{
         this.setState({score: this.state.score + value});
       } else {
         this.setState({score: this.state.score - Math.abs(value)});
+      }
+    }
+
+    updateBestScore(yourScore){
+      if (parseInt(yourScore) > this.state.bestScore){
+        this.setState({bestScore: parseInt(yourScore)});
       }
     }
 
@@ -113,7 +149,8 @@ class Game extends React.Component{
     render(){
       return(
         <div id="game">
-          <div id="score-block">SCORE:<span id="score">{this.state.score}</span></div>
+          <div id="score-block">CURRENT SCORE: <span id="score">{this.state.score}</span></div>
+          <div id="best-score-block">BEST SCORE ({this.state.gameMode} pairs): <span id="best-score">{this.state.bestScore}</span></div>
           <div id="new-game-block">
             <form id="bar" onSubmit={this.newGame}>
               <select id="gamemode" name="gamemode">
@@ -128,7 +165,8 @@ class Game extends React.Component{
           <div id="board">
             <Board 
               key={this.state.gameCount}
-              updateScore={this.updateScore} 
+              updateScore={this.updateScore}
+              updateBestScore={this.updateBestScore}
               CARDS={this.state.CARDS}
               matchCounter={this.matchCounter}
             />
