@@ -83,4 +83,6 @@ img{
   transform: rotateY(180deg);
   transform-style: preserve-3d;
   cursor:default;
+  border-radius: 5px;
+  border: 1px solid green;
 }

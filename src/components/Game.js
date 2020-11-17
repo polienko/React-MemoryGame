@@ -15,37 +15,18 @@ import img_10 from "../img/10.png";
 if (sessionStorage.getItem('score') == null){
     sessionStorage.setItem('score',"")
 }
-/* // NOT USED BECAUSE OF IMPORTED RESOURCES
-function insertCardPairInDeck(arrayToPush, i){
-  let newCardObj1 = {}
-  newCardObj1.path = "img_" + i.toString();
-  newCardObj1.data = i.toString();
-  newCardObj1.id = i.toString() + "a";
-  let newCardObj2 = {}
-  newCardObj2.path = "img_" + i.toString();
-  newCardObj2.data = i.toString();
-  newCardObj2.id = i.toString() + "b";
-  arrayToPush.push(newCardObj1,newCardObj2);
-  return arrayToPush;
-}
-
-let CARD_DECK = [];
-for (let i = 0; i < 11; i++) {
-  insertCardPairInDeck(CARD_DECK, i);
-}
-console.log(CARD_DECK);
-*/
 
 let CARD_DECK = [
-    {path:img_1, data:"1", id:"1a"},
-    {path:img_1, data:"1", id:"1b"},
-    {path:img_2, data:"2", id:"2a"},
-    {path:img_2, data:"2", id:"2b"},
-    {path:img_3, data:"3", id:"3a"},
-    {path:img_3, data:"3", id:"3b"},
-    {path:img_4, data:"4", id:"4a"},
-    {path:img_4, data:"4", id:"4b"},
-
+    {path:img_1, data:"1"},
+    {path:img_2, data:"2"},
+    {path:img_3, data:"3"},
+    {path:img_4, data:"4"},
+    {path:img_5, data:"5"},
+    {path:img_6, data:"6"},
+    {path:img_7, data:"7"},
+    {path:img_8, data:"8"},
+    {path:img_9, data:"9"},
+    {path:img_10, data:"10"},
   ];
 
 function shuffleCards(a) {
@@ -56,7 +37,11 @@ function shuffleCards(a) {
     return a;
 }
 
-let CARDS = CARD_DECK.slice(0,8);
+let DOUBLE_DECK = [];
+CARD_DECK.map((card) => (DOUBLE_DECK.push(card,card)));
+
+let CARDS = DOUBLE_DECK.slice(0,8);
+
 CARDS = shuffleCards(CARDS);
 let defaultGameMode = CARDS.length / 2;
 
@@ -81,19 +66,14 @@ class Game extends React.Component{
       this.updateScore = this.updateScore.bind(this);
       this.updateBestScore = this.updateBestScore.bind(this);
       this.newGame = this.newGame.bind(this);
-      this.matchCounter = this.matchCounter.bind(this);
-
-      console.log("----------------- localStorage");
-      for (let i = 0; i < localStorage.length; i++){
-        console.log(localStorage.key(i) + "=" + localStorage.getItem(localStorage.key(i)) + "");
-      }
-      console.log("----------------- localStorage");       
+      this.matchCounter = this.matchCounter.bind(this);      
     }
     
     newGame(event){
       event.preventDefault();
       let newGameMode = event.target.elements['gamemode'].value;
-      CARDS = CARD_DECK.slice(0,newGameMode*2);
+
+      CARDS = DOUBLE_DECK.slice(0,newGameMode*2);
       CARDS = shuffleCards(CARDS);
 
       this.setState({gameCount: this.state.gameCount + 1});
