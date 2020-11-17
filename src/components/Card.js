@@ -17,7 +17,7 @@ class Card extends React.Component{
       }
       this.cardHandler = this.cardHandler.bind(this);
     }
-    
+
     cardHandler(){
       if (this.state.class === "card match" || this.state.class === "card flip") {
         return "CAN'T CLICK ON CARD";
@@ -26,12 +26,12 @@ class Card extends React.Component{
         return "CAN'T CLICK ON CARD";
       }
   
-      let boardHandlerResult = this.props.boardHandler(this);
+      let clickHandlerResult = this.props.clickHandler(this);
   
-      if (boardHandlerResult === "FIRST CARD"){
+      if (clickHandlerResult === "FIRST CARD"){
         this.state.class === "card" ? this.setState({class:"card flip"}) : this.setState({class:this.state.class});
-      } else if (typeof boardHandlerResult === 'object' && boardHandlerResult !== null) {
-        let previousCard = boardHandlerResult;
+      } else if (typeof clickHandlerResult === 'object' && clickHandlerResult !== null) {
+        let previousCard = clickHandlerResult;
         if (previousCard.props.data === this.props.data) {
           previousCard.setState({class:"card match"});
           this.setState({class:"card match"});

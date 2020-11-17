@@ -1,5 +1,5 @@
 import React from "react";
-import Board from './Board';
+import Card from './Card';
 
 import img_1 from "../img/1.png";
 import img_2 from "../img/2.png";
@@ -12,37 +12,25 @@ import img_8 from "../img/8.png";
 import img_9 from "../img/9.png";
 import img_10 from "../img/10.png";
 
-if (sessionStorage.getItem('score') == null){
-    sessionStorage.setItem('score',"")
-}
-
 let CARD_DECK = [
-    {path:img_1, data:"1"},
-    {path:img_2, data:"2"},
-    {path:img_3, data:"3"},
-    {path:img_4, data:"4"},
-    {path:img_5, data:"5"},
-    {path:img_6, data:"6"},
-    {path:img_7, data:"7"},
-    {path:img_8, data:"8"},
-    {path:img_9, data:"9"},
-    {path:img_10, data:"10"},
-  ];
-
-function shuffleCards(a) {
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-}
+  {data:"1", match:false, path:img_1},
+  {data:"2", match:false, path:img_2},
+  {data:"3", match:false, path:img_3},
+  {data:"4", match:false, path:img_4},
+  {data:"5", match:false, path:img_5},
+  {data:"6", match:false, path:img_6},
+  {data:"7", match:false, path:img_7},
+  {data:"8", match:false, path:img_8},
+  {data:"9", match:false, path:img_9},
+  {data:"10", match:false, path:img_10},
+];
 
 let DOUBLE_DECK = [];
 CARD_DECK.map((card) => (DOUBLE_DECK.push(card,card)));
 
 let CARDS = DOUBLE_DECK.slice(0,8);
-
 CARDS = shuffleCards(CARDS);
+
 let defaultGameMode = CARDS.length / 2;
 
 //localStorage.clear(); //FOR DEBUG PURPOSES
@@ -51,22 +39,33 @@ if (localStorage.getItem(defaultGameMode) === null){
   localStorage.setItem(defaultGameMode,"0");
 }
 
+function shuffleCards(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 class Game extends React.Component{
     constructor(props){
       super(props);
       this.state = {
         score:0,
-        gameCount:0,
+        gameID:0,
         gameMode:CARDS.length / 2,
         bestScore:localStorage.getItem(defaultGameMode),
         MATCH_COUNTER: 1,
-        CARDS: CARDS
+        CARDS: CARDS,
+        previousCard:null,
+        click:1
       }
-
+      console.log(this.state.CARDS);
       this.updateScore = this.updateScore.bind(this);
       this.updateBestScore = this.updateBestScore.bind(this);
       this.newGame = this.newGame.bind(this);
-      this.matchCounter = this.matchCounter.bind(this);      
+      this.matchCounter = this.matchCounter.bind(this);   
+      this.clickHandler = this.clickHandler.bind(this);   
     }
     
     newGame(event){
@@ -76,7 +75,7 @@ class Game extends React.Component{
       CARDS = DOUBLE_DECK.slice(0,newGameMode*2);
       CARDS = shuffleCards(CARDS);
 
-      this.setState({gameCount: this.state.gameCount + 1});
+      this.setState({gameID: this.state.gameID + 1});
       this.setState({gameMode: CARDS.length / 2});
       this.setState({score: 0});
       this.setState({MATCH_COUNTER: 1});
@@ -86,13 +85,25 @@ class Game extends React.Component{
         this.setState({bestScore: localStorage.getItem(newGameMode)});
       } else {
         this.setState({bestScore: localStorage.getItem(newGameMode)});
-      }
+      }     
+    }
 
-      console.log("----------------- localStorage");
-      for (let i = 0; i < localStorage.length; i++){
-        console.log(localStorage.key(i) + "=" + localStorage.getItem(localStorage.key(i)) + "");
-      }
-      console.log("----------------- localStorage");      
+    clickHandler(card){
+      console.log(this.state.previousCard);
+      this.setState({previousCard: card});
+      console.log(card);
+
+      this.setState({click: this.state.click + 1});
+      console.log("click:"+this.state.click);
+  
+      this.setState({previousCard: card});
+      
+      if (this.state.click === 1){
+        return "FIRST CARD";
+      } else if (this.state.click === 2) {
+        this.setState({click:1});
+        return this.state.previousCard;
+      }      
     }
   
     updateScore(value){
@@ -116,6 +127,7 @@ class Game extends React.Component{
     }
   
     render(){
+      let MATCHES_TO_WIN = CARDS.length / 2;
       return(
         <div id="game">
           <div id="score-block">CURRENT SCORE: <span id="score">{this.state.score}</span></div>
@@ -131,14 +143,22 @@ class Game extends React.Component{
               <input id="new-game" type="submit" value="NEW" />
             </form>
           </div>
-          <div id="board">
-            <Board 
-              key={this.state.gameCount}
+          <div id="board" key={this.state.gameID}>
+            {CARDS.map((card,index) => (
+            <Card 
+              key={index}
+              index={index}
+              match={card.match}
+              path={card.path} 
+              data={card.data} 
+              id={card.id} 
               updateScore={this.updateScore}
-              updateBestScore={this.updateBestScore}
-              CARDS={this.state.CARDS}
+              updateBestScore={this.updateBestScore} 
+              MATCHES_TO_WIN={MATCHES_TO_WIN} 
               matchCounter={this.matchCounter}
+              clickHandler={this.clickHandler}
             />
+            ))}            
           </div>
         </div>
       );
