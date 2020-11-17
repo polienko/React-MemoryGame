@@ -45,18 +45,7 @@ let CARD_DECK = [
     {path:img_3, data:"3", id:"3b"},
     {path:img_4, data:"4", id:"4a"},
     {path:img_4, data:"4", id:"4b"},
-    {path:img_5, data:"5", id:"5a"},
-    {path:img_5, data:"5", id:"5b"},
-    {path:img_6, data:"6", id:"6a"},
-    {path:img_6, data:"6", id:"6b"},
-    {path:img_7, data:"7", id:"7a"},
-    {path:img_7, data:"7", id:"7b"},
-    {path:img_8, data:"8", id:"8a"},
-    {path:img_8, data:"8", id:"8b"},
-    {path:img_9, data:"9", id:"9a"},
-    {path:img_9, data:"9", id:"9b"},
-    {path:img_10, data:"10", id:"10a"},
-    {path:img_10, data:"10", id:"10b"},
+
   ];
 
 function shuffleCards(a) {
