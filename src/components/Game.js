@@ -1,5 +1,5 @@
 import React from "react";
-import Board from './Board';
+import Card from './Card';
 
 import img_1 from "../img/1.png";
 import img_2 from "../img/2.png";
@@ -12,105 +12,118 @@ import img_8 from "../img/8.png";
 import img_9 from "../img/9.png";
 import img_10 from "../img/10.png";
 
-if (sessionStorage.getItem('score') == null){
-    sessionStorage.setItem('score',"")
-}
-/* // NOT USED BECAUSE OF IMPORTED RESOURCES
-function insertCardPairInDeck(arrayToPush, i){
-  let newCardObj1 = {}
-  newCardObj1.path = "img_" + i.toString();
-  newCardObj1.data = i.toString();
-  newCardObj1.id = i.toString() + "a";
-  let newCardObj2 = {}
-  newCardObj2.path = "img_" + i.toString();
-  newCardObj2.data = i.toString();
-  newCardObj2.id = i.toString() + "b";
-  arrayToPush.push(newCardObj1,newCardObj2);
-  return arrayToPush;
-}
+const SHOW_SECOND_CARD_TIME = 500;
 
-let CARD_DECK = [];
-for (let i = 0; i < 11; i++) {
-  insertCardPairInDeck(CARD_DECK, i);
-}
-console.log(CARD_DECK);
-*/
+const DEFAULT_CLASS = "card";
+const MATCH_CLASS = "card match";
+const FLIP_CLASS = "card flip";
+
+let BOARD_LOCKED = false;
+
+const SCORE_MOD_PLUS = 50;
+const SCORE_MOD_MINUS = -10;
 
 let CARD_DECK = [
-    {path:img_1, data:"1", id:"1a"},
-    {path:img_1, data:"1", id:"1b"},
-    {path:img_2, data:"2", id:"2a"},
-    {path:img_2, data:"2", id:"2b"},
-    {path:img_3, data:"3", id:"3a"},
-    {path:img_3, data:"3", id:"3b"},
-    {path:img_4, data:"4", id:"4a"},
-    {path:img_4, data:"4", id:"4b"},
-    {path:img_5, data:"5", id:"5a"},
-    {path:img_5, data:"5", id:"5b"},
-    {path:img_6, data:"6", id:"6a"},
-    {path:img_6, data:"6", id:"6b"},
-    {path:img_7, data:"7", id:"7a"},
-    {path:img_7, data:"7", id:"7b"},
-    {path:img_8, data:"8", id:"8a"},
-    {path:img_8, data:"8", id:"8b"},
-    {path:img_9, data:"9", id:"9a"},
-    {path:img_9, data:"9", id:"9b"},
-    {path:img_10, data:"10", id:"10a"},
-    {path:img_10, data:"10", id:"10b"},
-  ];
+  {data:"1", class:DEFAULT_CLASS, path:img_1},
+  {data:"2", class:DEFAULT_CLASS, path:img_2},
+  {data:"3", class:DEFAULT_CLASS, path:img_3},
+  {data:"4", class:DEFAULT_CLASS, path:img_4},
+  {data:"5", class:DEFAULT_CLASS, path:img_5},
+  {data:"6", class:DEFAULT_CLASS, path:img_6},
+  {data:"7", class:DEFAULT_CLASS, path:img_7},
+  {data:"8", class:DEFAULT_CLASS, path:img_8},
+  {data:"9", class:DEFAULT_CLASS, path:img_9},
+  {data:"10", class:DEFAULT_CLASS, path:img_10},
+];
 
-function shuffleCards(a) {
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-}
+let DOUBLE_DECK = [];
+CARD_DECK.map((card) => (DOUBLE_DECK.push(card, Object.assign({}, card))));
 
-let CARDS = CARD_DECK.slice(0,8);
+let CARDS = DOUBLE_DECK.slice(0,8);
 CARDS = shuffleCards(CARDS);
-let defaultGameMode = CARDS.length / 2;
+
+let MATCHES_TO_WIN = CARDS.length / 2;
+let DEFAULT_GAMEMODE = CARDS.length / 2;
 
 //localStorage.clear(); //FOR DEBUG PURPOSES
 
-if (localStorage.getItem(defaultGameMode) === null){
-  localStorage.setItem(defaultGameMode,"0");
+if (localStorage.getItem(DEFAULT_GAMEMODE) === null){
+  localStorage.setItem(DEFAULT_GAMEMODE,"0");
+}
+
+function shuffleCards(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function switchClassOnAllCards(from,to){
+  for (const [key, someCard] of Object.entries(CARDS)){
+    if (someCard.class === from){
+      someCard.class = to;
+    }
+  }
+}
+
+function resetClassOnAllCards(){
+  for (const [key, someCard] of Object.entries(CARDS)){
+    someCard.class = DEFAULT_CLASS;
+  }
+}
+
+function switchClassToFlipped(clickedCard){
+  for (const [key, someCard] of Object.entries(CARDS)){
+    if(parseInt(key) === parseInt(clickedCard.props.index)){
+      if (someCard.class === DEFAULT_CLASS){
+        someCard.class = FLIP_CLASS;
+      }
+    }
+  }
+}
+
+function outputLocalStorage(){
+  console.log("------- localStorage:");
+  for (let i = 0; i < localStorage.length; i++){
+    console.log(localStorage.key(i) + "=[" + localStorage.getItem(localStorage.key(i)) + "]");
+  }
 }
 
 class Game extends React.Component{
     constructor(props){
       super(props);
       this.state = {
+        gameID:0,
         score:0,
-        gameCount:0,
+        bestScore:localStorage.getItem(DEFAULT_GAMEMODE),
         gameMode:CARDS.length / 2,
-        bestScore:localStorage.getItem(defaultGameMode),
-        MATCH_COUNTER: 1,
-        CARDS: CARDS
+        matches: 1,
+        click:1,
+        freezeCards:false
       }
-
+      console.log(this.state.CARDS);
       this.updateScore = this.updateScore.bind(this);
       this.updateBestScore = this.updateBestScore.bind(this);
-      this.newGame = this.newGame.bind(this);
-      this.matchCounter = this.matchCounter.bind(this);
+      this.newGame = this.newGame.bind(this);   
+      this.clickHandler = this.clickHandler.bind(this);   
 
-      console.log("----------------- localStorage");
-      for (let i = 0; i < localStorage.length; i++){
-        console.log(localStorage.key(i) + "=" + localStorage.getItem(localStorage.key(i)) + "");
-      }
-      console.log("----------------- localStorage");       
+      outputLocalStorage();
     }
-    
+
     newGame(event){
       event.preventDefault();
       let newGameMode = event.target.elements['gamemode'].value;
-      CARDS = CARD_DECK.slice(0,newGameMode*2);
-      CARDS = shuffleCards(CARDS);
 
-      this.setState({gameCount: this.state.gameCount + 1});
+      resetClassOnAllCards();
+      CARDS = DOUBLE_DECK.slice(0,newGameMode*2);
+      CARDS = shuffleCards(CARDS);
+      MATCHES_TO_WIN = CARDS.length / 2;
+
+      this.setState({gameID: this.state.gameID + 1});
       this.setState({gameMode: CARDS.length / 2});
       this.setState({score: 0});
-      this.setState({MATCH_COUNTER: 1});
+      this.setState({matches: 1});
       this.setState({CARDS:CARDS})
       if (localStorage.getItem(newGameMode) === null){
         localStorage.setItem(newGameMode,"0");
@@ -118,12 +131,74 @@ class Game extends React.Component{
       } else {
         this.setState({bestScore: localStorage.getItem(newGameMode)});
       }
+      outputLocalStorage();
+    }
 
-      console.log("----------------- localStorage");
-      for (let i = 0; i < localStorage.length; i++){
-        console.log(localStorage.key(i) + "=" + localStorage.getItem(localStorage.key(i)) + "");
+    clickHandler(clickedCard){
+      if (clickedCard.props.class === MATCH_CLASS){
+        return "CAN'T CLICK ON CARD";
       }
-      console.log("----------------- localStorage");      
+      if (clickedCard.props.class === FLIP_CLASS){
+        return "CAN'T CLICK ON CARD";
+      } 
+      if (BOARD_LOCKED){
+        return "CAN'T CLICK ON CARD";
+      }
+
+      this.setState({click: this.state.click + 1});
+
+      switchClassToFlipped(clickedCard);
+      
+      if (this.state.click === 2) {
+        let checkTheseCards=[];
+        for (const [key, someCard] of Object.entries(CARDS)){
+            if (someCard.class === FLIP_CLASS){
+              checkTheseCards.push(someCard);
+            }
+        }
+
+        // ADD CARDS TO CHECK
+        let firstCard = null;
+        let secondCard = null;
+        for (const [key, card] of Object.entries(checkTheseCards)){
+          if (parseInt(key) === 0){
+            firstCard = card;
+          } 
+          if (parseInt(key) === 1){
+            secondCard = card;
+          }
+        }
+        
+        // CHECKING CARDS
+        let match = null;
+        if (firstCard !== null && secondCard !== null){
+          if (firstCard.data === secondCard.data){
+            match = true;
+          } else {
+            match = false;
+          }
+        }
+
+        // MATCH HANDLING
+        if (match){
+          switchClassOnAllCards(FLIP_CLASS, MATCH_CLASS)
+          this.updateScore(SCORE_MOD_PLUS);
+          this.setState({matches: this.state.matches + 1});
+          if (this.state.matches === MATCHES_TO_WIN){
+            this.updateBestScore(this.state.score + SCORE_MOD_PLUS);
+            outputLocalStorage();
+          }
+        } else {
+          BOARD_LOCKED = true;
+          this.updateScore(SCORE_MOD_MINUS);
+          setTimeout(() => {
+            this.setState({freezeCards:true});
+            BOARD_LOCKED = false;
+            }, SHOW_SECOND_CARD_TIME);          
+        }
+        
+        this.setState({click:1});
+      }
     }
   
     updateScore(value){
@@ -137,16 +212,16 @@ class Game extends React.Component{
     updateBestScore(yourScore){
       if (parseInt(yourScore) > this.state.bestScore){
         this.setState({bestScore: parseInt(yourScore)});
+        localStorage.setItem(CARDS.length / 2,yourScore.toString());
       }
     }
 
-    matchCounter(){
-      this.setState({MATCH_COUNTER: this.state.MATCH_COUNTER + 1});
-      console.log("matches:"+this.state.MATCH_COUNTER);
-      return(this.state.MATCH_COUNTER);
-    }
-  
     render(){
+      if (this.state.freezeCards === true){
+        switchClassOnAllCards(FLIP_CLASS, DEFAULT_CLASS)
+        this.setState({freezeCards: false});
+      }
+
       return(
         <div id="game">
           <div id="score-block">CURRENT SCORE: <span id="score">{this.state.score}</span></div>
@@ -162,14 +237,17 @@ class Game extends React.Component{
               <input id="new-game" type="submit" value="NEW" />
             </form>
           </div>
-          <div id="board">
-            <Board 
-              key={this.state.gameCount}
-              updateScore={this.updateScore}
-              updateBestScore={this.updateBestScore}
-              CARDS={this.state.CARDS}
-              matchCounter={this.matchCounter}
+          <div id="board" key={this.state.gameID}>
+            {CARDS.map((card,index) => (
+            <Card 
+              key={index}
+              clickHandler={this.clickHandler}
+              index={index}
+              data={card.data}
+              class={card.class}
+              path={card.path}
             />
+            ))}            
           </div>
         </div>
       );
