@@ -12,31 +12,43 @@ import img_8 from "../img/8.png";
 import img_9 from "../img/9.png";
 import img_10 from "../img/10.png";
 
+const SHOW_SECOND_CARD_TIME = 500;
+
+const DEFAULT_CLASS = "card";
+const MATCH_CLASS = "card match";
+const FLIP_CLASS = "card flip";
+
+let BOARD_LOCKED = false;
+
+const SCORE_MOD_PLUS = 50;
+const SCORE_MOD_MINUS = -10;
+
 let CARD_DECK = [
-  {data:"1", match:false, path:img_1},
-  {data:"2", match:false, path:img_2},
-  {data:"3", match:false, path:img_3},
-  {data:"4", match:false, path:img_4},
-  {data:"5", match:false, path:img_5},
-  {data:"6", match:false, path:img_6},
-  {data:"7", match:false, path:img_7},
-  {data:"8", match:false, path:img_8},
-  {data:"9", match:false, path:img_9},
-  {data:"10", match:false, path:img_10},
+  {data:"1", class:DEFAULT_CLASS, path:img_1},
+  {data:"2", class:DEFAULT_CLASS, path:img_2},
+  {data:"3", class:DEFAULT_CLASS, path:img_3},
+  {data:"4", class:DEFAULT_CLASS, path:img_4},
+  {data:"5", class:DEFAULT_CLASS, path:img_5},
+  {data:"6", class:DEFAULT_CLASS, path:img_6},
+  {data:"7", class:DEFAULT_CLASS, path:img_7},
+  {data:"8", class:DEFAULT_CLASS, path:img_8},
+  {data:"9", class:DEFAULT_CLASS, path:img_9},
+  {data:"10", class:DEFAULT_CLASS, path:img_10},
 ];
 
 let DOUBLE_DECK = [];
-CARD_DECK.map((card) => (DOUBLE_DECK.push(card,card)));
+CARD_DECK.map((card) => (DOUBLE_DECK.push(card, Object.assign({}, card))));
 
 let CARDS = DOUBLE_DECK.slice(0,8);
 CARDS = shuffleCards(CARDS);
 
-let defaultGameMode = CARDS.length / 2;
+let MATCHES_TO_WIN = CARDS.length / 2;
+let DEFAULT_GAMEMODE = CARDS.length / 2;
 
 //localStorage.clear(); //FOR DEBUG PURPOSES
 
-if (localStorage.getItem(defaultGameMode) === null){
-  localStorage.setItem(defaultGameMode,"0");
+if (localStorage.getItem(DEFAULT_GAMEMODE) === null){
+  localStorage.setItem(DEFAULT_GAMEMODE,"0");
 }
 
 function shuffleCards(a) {
@@ -47,63 +59,146 @@ function shuffleCards(a) {
   return a;
 }
 
+function switchClassOnAllCards(from,to){
+  for (const [key, someCard] of Object.entries(CARDS)){
+    if (someCard.class === from){
+      someCard.class = to;
+    }
+  }
+}
+
+function resetClassOnAllCards(){
+  for (const [key, someCard] of Object.entries(CARDS)){
+    someCard.class = DEFAULT_CLASS;
+  }
+}
+
+function switchClassToFlipped(clickedCard){
+  for (const [key, someCard] of Object.entries(CARDS)){
+    if(parseInt(key) === parseInt(clickedCard.props.index)){
+      if (someCard.class === DEFAULT_CLASS){
+        someCard.class = FLIP_CLASS;
+      }
+    }
+  }
+}
+
+function outputLocalStorage(){
+  console.log("------- localStorage:");
+  for (let i = 0; i < localStorage.length; i++){
+    console.log(localStorage.key(i) + "=[" + localStorage.getItem(localStorage.key(i)) + "]");
+  }
+}
+
 class Game extends React.Component{
     constructor(props){
       super(props);
       this.state = {
-        score:0,
         gameID:0,
+        score:0,
+        bestScore:localStorage.getItem(DEFAULT_GAMEMODE),
         gameMode:CARDS.length / 2,
-        bestScore:localStorage.getItem(defaultGameMode),
-        MATCH_COUNTER: 1,
-        CARDS: CARDS,
-        previousCard:null,
-        click:1
+        matches: 1,
+        click:1,
+        freezeCards:false
       }
       console.log(this.state.CARDS);
       this.updateScore = this.updateScore.bind(this);
       this.updateBestScore = this.updateBestScore.bind(this);
-      this.newGame = this.newGame.bind(this);
-      this.matchCounter = this.matchCounter.bind(this);   
+      this.newGame = this.newGame.bind(this);   
       this.clickHandler = this.clickHandler.bind(this);   
+
+      outputLocalStorage();
     }
-    
+
     newGame(event){
       event.preventDefault();
       let newGameMode = event.target.elements['gamemode'].value;
 
+      resetClassOnAllCards();
       CARDS = DOUBLE_DECK.slice(0,newGameMode*2);
       CARDS = shuffleCards(CARDS);
+      MATCHES_TO_WIN = CARDS.length / 2;
 
       this.setState({gameID: this.state.gameID + 1});
       this.setState({gameMode: CARDS.length / 2});
       this.setState({score: 0});
-      this.setState({MATCH_COUNTER: 1});
+      this.setState({matches: 1});
       this.setState({CARDS:CARDS})
       if (localStorage.getItem(newGameMode) === null){
         localStorage.setItem(newGameMode,"0");
         this.setState({bestScore: localStorage.getItem(newGameMode)});
       } else {
         this.setState({bestScore: localStorage.getItem(newGameMode)});
-      }     
+      }
+      outputLocalStorage();
     }
 
-    clickHandler(card){
-      console.log(this.state.previousCard);
-      this.setState({previousCard: card});
-      console.log(card);
+    clickHandler(clickedCard){
+      if (clickedCard.props.class === MATCH_CLASS){
+        return "CAN'T CLICK ON CARD";
+      }
+      if (clickedCard.props.class === FLIP_CLASS){
+        return "CAN'T CLICK ON CARD";
+      } 
+      if (BOARD_LOCKED){
+        return "CAN'T CLICK ON CARD";
+      }
 
       this.setState({click: this.state.click + 1});
-      console.log("click:"+this.state.click);
-  
-      this.setState({previousCard: card});
+
+      switchClassToFlipped(clickedCard);
       
-      if (this.state.click === 1){
-        return "FIRST CARD";
-      } else if (this.state.click === 2) {
+      if (this.state.click === 2) {
+        let checkTheseCards=[];
+        for (const [key, someCard] of Object.entries(CARDS)){
+            if (someCard.class === FLIP_CLASS){
+              checkTheseCards.push(someCard);
+            }
+        }
+
+        // ADD CARDS TO CHECK
+        let firstCard = null;
+        let secondCard = null;
+        for (const [key, card] of Object.entries(checkTheseCards)){
+          if (parseInt(key) === 0){
+            firstCard = card;
+          } 
+          if (parseInt(key) === 1){
+            secondCard = card;
+          }
+        }
+        
+        // CHECKING CARDS
+        let match = null;
+        if (firstCard !== null && secondCard !== null){
+          if (firstCard.data === secondCard.data){
+            match = true;
+          } else {
+            match = false;
+          }
+        }
+
+        // MATCH HANDLING
+        if (match){
+          switchClassOnAllCards(FLIP_CLASS, MATCH_CLASS)
+          this.updateScore(SCORE_MOD_PLUS);
+          this.setState({matches: this.state.matches + 1});
+          if (this.state.matches === MATCHES_TO_WIN){
+            this.updateBestScore(this.state.score + SCORE_MOD_PLUS);
+            outputLocalStorage();
+          }
+        } else {
+          BOARD_LOCKED = true;
+          this.updateScore(SCORE_MOD_MINUS);
+          setTimeout(() => {
+            this.setState({freezeCards:true});
+            BOARD_LOCKED = false;
+            }, SHOW_SECOND_CARD_TIME);          
+        }
+        
         this.setState({click:1});
-        return this.state.previousCard;
-      }      
+      }
     }
   
     updateScore(value){
@@ -117,17 +212,16 @@ class Game extends React.Component{
     updateBestScore(yourScore){
       if (parseInt(yourScore) > this.state.bestScore){
         this.setState({bestScore: parseInt(yourScore)});
+        localStorage.setItem(CARDS.length / 2,yourScore.toString());
       }
     }
 
-    matchCounter(){
-      this.setState({MATCH_COUNTER: this.state.MATCH_COUNTER + 1});
-      console.log("matches:"+this.state.MATCH_COUNTER);
-      return(this.state.MATCH_COUNTER);
-    }
-  
     render(){
-      let MATCHES_TO_WIN = CARDS.length / 2;
+      if (this.state.freezeCards === true){
+        switchClassOnAllCards(FLIP_CLASS, DEFAULT_CLASS)
+        this.setState({freezeCards: false});
+      }
+
       return(
         <div id="game">
           <div id="score-block">CURRENT SCORE: <span id="score">{this.state.score}</span></div>
@@ -147,16 +241,11 @@ class Game extends React.Component{
             {CARDS.map((card,index) => (
             <Card 
               key={index}
-              index={index}
-              match={card.match}
-              path={card.path} 
-              data={card.data} 
-              id={card.id} 
-              updateScore={this.updateScore}
-              updateBestScore={this.updateBestScore} 
-              MATCHES_TO_WIN={MATCHES_TO_WIN} 
-              matchCounter={this.matchCounter}
               clickHandler={this.clickHandler}
+              index={index}
+              data={card.data}
+              class={card.class}
+              path={card.path}
             />
             ))}            
           </div>
