@@ -12,43 +12,49 @@ import img_8 from "../img/8.png";
 import img_9 from "../img/9.png";
 import img_10 from "../img/10.png";
 
+const DEBUG_MODE = false;
+
+let DEFAULT_CLASS = "card";
+let MATCH_CLASS = "card match";
+let FLIP_CLASS = "card flip";
+
+if (DEBUG_MODE){
+  DEFAULT_CLASS = "card_debug";
+  MATCH_CLASS = "card_debug match_debug";
+  FLIP_CLASS = "card_debug flip_debug";
+}
+
+const DEFAULT_GAMEMODE = 4;
 const SHOW_SECOND_CARD_TIME = 500;
-
-const DEFAULT_CLASS = "card";
-const MATCH_CLASS = "card match";
-const FLIP_CLASS = "card flip";
-
-let BOARD_LOCKED = false;
 
 const SCORE_MOD_PLUS = 50;
 const SCORE_MOD_MINUS = -10;
 
-let CARD_DECK = [
-  {data:"1", class:DEFAULT_CLASS, path:img_1},
-  {data:"2", class:DEFAULT_CLASS, path:img_2},
-  {data:"3", class:DEFAULT_CLASS, path:img_3},
-  {data:"4", class:DEFAULT_CLASS, path:img_4},
-  {data:"5", class:DEFAULT_CLASS, path:img_5},
-  {data:"6", class:DEFAULT_CLASS, path:img_6},
-  {data:"7", class:DEFAULT_CLASS, path:img_7},
-  {data:"8", class:DEFAULT_CLASS, path:img_8},
-  {data:"9", class:DEFAULT_CLASS, path:img_9},
-  {data:"10", class:DEFAULT_CLASS, path:img_10},
+let UNIQUE_CARDS = [
+  {data: "1", class: DEFAULT_CLASS, path: img_1},
+  {data: "2", class: DEFAULT_CLASS, path: img_2},
+  {data: "3", class: DEFAULT_CLASS, path: img_3},
+  {data: "4", class: DEFAULT_CLASS, path: img_4},
+  {data: "5", class: DEFAULT_CLASS, path: img_5},
+  {data: "6", class: DEFAULT_CLASS, path: img_6},
+  {data: "7", class: DEFAULT_CLASS, path: img_7},
+  {data: "8", class: DEFAULT_CLASS, path: img_8},
+  {data: "9", class: DEFAULT_CLASS, path: img_9},
+  {data: "10", class: DEFAULT_CLASS, path: img_10}
 ];
 
-let DOUBLE_DECK = [];
-CARD_DECK.map((card) => (DOUBLE_DECK.push(card, Object.assign({}, card))));
+let FULL_CARD_DECK = [];
+UNIQUE_CARDS.map((card) => (
+  FULL_CARD_DECK.push(card, Object.assign({}, card)))
+);
+let GAME_DECK = FULL_CARD_DECK.slice(0, DEFAULT_GAMEMODE * 2);
+GAME_DECK = shuffleCards(GAME_DECK);
 
-let CARDS = DOUBLE_DECK.slice(0,8);
-CARDS = shuffleCards(CARDS);
+let MATCHES_TO_WIN = GAME_DECK.length / 2;
+let BOARD_LOCKED = false;
 
-let MATCHES_TO_WIN = CARDS.length / 2;
-let DEFAULT_GAMEMODE = CARDS.length / 2;
-
-//localStorage.clear(); //FOR DEBUG PURPOSES
-
-if (localStorage.getItem(DEFAULT_GAMEMODE) === null){
-  localStorage.setItem(DEFAULT_GAMEMODE,"0");
+if (localStorage.getItem("bestScoreFor_" + DEFAULT_GAMEMODE) === null){
+  localStorage.setItem("bestScoreFor_" + DEFAULT_GAMEMODE, "0");
 }
 
 function shuffleCards(a) {
@@ -58,57 +64,60 @@ function shuffleCards(a) {
   }
   return a;
 }
-
-function switchClassOnAllCards(from,to){
-  for (const [key, someCard] of Object.entries(CARDS)){
-    if (someCard.class === from){
-      someCard.class = to;
+function switchClassOnCards(from,to){
+  for (const [key, card] of Object.entries(GAME_DECK)){
+    if (card.class === from){
+      card.class = to;
     }
   }
 }
-
 function resetClassOnAllCards(){
-  for (const [key, someCard] of Object.entries(CARDS)){
-    someCard.class = DEFAULT_CLASS;
+  for (const [key, card] of Object.entries(GAME_DECK)){
+    card.class = DEFAULT_CLASS;
   }
 }
-
 function switchClassToFlipped(clickedCard){
-  for (const [key, someCard] of Object.entries(CARDS)){
+  for (const [key, card] of Object.entries(GAME_DECK)){
     if(parseInt(key) === parseInt(clickedCard.props.index)){
-      if (someCard.class === DEFAULT_CLASS){
-        someCard.class = FLIP_CLASS;
+      if (card.class === DEFAULT_CLASS){
+        card.class = FLIP_CLASS;
       }
     }
   }
 }
-
 function outputLocalStorage(){
-  console.log("------- localStorage:");
-  for (let i = 0; i < localStorage.length; i++){
-    console.log(localStorage.key(i) + "=[" + localStorage.getItem(localStorage.key(i)) + "]");
+  if (DEBUG_MODE){
+    let output = "localStorage: \n";
+    for (let i = 0; i < localStorage.length; i++){
+      output += " * " + localStorage.key(i) + " = [" + 
+      localStorage.getItem(localStorage.key(i)) + "] \n";
+    }
+    console.log(output);
   }
 }
+
 
 class Game extends React.Component{
     constructor(props){
       super(props);
       this.state = {
-        gameID:0,
-        score:0,
-        bestScore:localStorage.getItem(DEFAULT_GAMEMODE),
-        gameMode:CARDS.length / 2,
+        gameID: 0,
+        gameMode: GAME_DECK.length / 2,
         matches: 1,
         click:1,
-        freezeCards:false
+        freezeCards:false,
+        score: 0,
+        bestScore: localStorage.getItem("bestScoreFor_" + DEFAULT_GAMEMODE)
       }
-      console.log(this.state.CARDS);
-      this.updateScore = this.updateScore.bind(this);
+      this.changeScore = this.changeScore.bind(this);
       this.updateBestScore = this.updateBestScore.bind(this);
       this.newGame = this.newGame.bind(this);   
-      this.clickHandler = this.clickHandler.bind(this);   
-
-      outputLocalStorage();
+      this.clickHandler = this.clickHandler.bind(this); 
+      this.clearBestScores = this.clearBestScores.bind(this);
+      if (DEBUG_MODE){
+        outputLocalStorage();
+        console.log("GAME_DECK:\n", GAME_DECK);
+      }  
     }
 
     newGame(event){
@@ -116,33 +125,44 @@ class Game extends React.Component{
       let newGameMode = event.target.elements['gamemode'].value;
 
       resetClassOnAllCards();
-      CARDS = DOUBLE_DECK.slice(0,newGameMode*2);
-      CARDS = shuffleCards(CARDS);
-      MATCHES_TO_WIN = CARDS.length / 2;
+      GAME_DECK = FULL_CARD_DECK.slice(0, newGameMode * 2);
+      GAME_DECK = shuffleCards(GAME_DECK);
+      MATCHES_TO_WIN = GAME_DECK.length / 2;
 
       this.setState({gameID: this.state.gameID + 1});
-      this.setState({gameMode: CARDS.length / 2});
       this.setState({score: 0});
+      this.setState({gameMode: GAME_DECK.length / 2});
+      
       this.setState({matches: 1});
-      this.setState({CARDS:CARDS})
-      if (localStorage.getItem(newGameMode) === null){
-        localStorage.setItem(newGameMode,"0");
-        this.setState({bestScore: localStorage.getItem(newGameMode)});
+      if (localStorage.getItem("bestScoreFor_" + newGameMode) === null){
+        localStorage.setItem("bestScoreFor_" + newGameMode,"0");
+        this.setState({bestScore: localStorage.getItem("bestScoreFor_" + newGameMode)});
       } else {
-        this.setState({bestScore: localStorage.getItem(newGameMode)});
+        this.setState({bestScore: localStorage.getItem("bestScoreFor_" + newGameMode)});
       }
-      outputLocalStorage();
+      if (DEBUG_MODE) {
+        outputLocalStorage();
+        console.log("GAME_DECK:\n", GAME_DECK);
+      }
+    }
+    
+    clearBestScores(){
+      localStorage.clear();
+      let currentGameMode = GAME_DECK.length / 2;
+      if (localStorage.getItem("bestScoreFor_" + currentGameMode) === null){
+        localStorage.setItem("bestScoreFor_" + currentGameMode,"0");
+        this.setState({bestScore: localStorage.getItem("bestScoreFor_" + currentGameMode)});
+      } else {
+        this.setState({bestScore: localStorage.getItem("bestScoreFor_" + currentGameMode)});
+      }
+      if (DEBUG_MODE) {outputLocalStorage();}
     }
 
     clickHandler(clickedCard){
-      if (clickedCard.props.class === MATCH_CLASS){
-        return "CAN'T CLICK ON CARD";
-      }
-      if (clickedCard.props.class === FLIP_CLASS){
-        return "CAN'T CLICK ON CARD";
-      } 
-      if (BOARD_LOCKED){
-        return "CAN'T CLICK ON CARD";
+      if (clickedCard.props.class === MATCH_CLASS ||
+          clickedCard.props.class === FLIP_CLASS ||
+          BOARD_LOCKED) {
+            return "CAN'T CLICK ON CARD";
       }
 
       this.setState({click: this.state.click + 1});
@@ -151,7 +171,7 @@ class Game extends React.Component{
       
       if (this.state.click === 2) {
         let checkTheseCards=[];
-        for (const [key, someCard] of Object.entries(CARDS)){
+        for (const [key, someCard] of Object.entries(GAME_DECK)){
             if (someCard.class === FLIP_CLASS){
               checkTheseCards.push(someCard);
             }
@@ -181,16 +201,16 @@ class Game extends React.Component{
 
         // MATCH HANDLING
         if (match){
-          switchClassOnAllCards(FLIP_CLASS, MATCH_CLASS)
-          this.updateScore(SCORE_MOD_PLUS);
+          switchClassOnCards(FLIP_CLASS, MATCH_CLASS)
+          this.changeScore(SCORE_MOD_PLUS);
           this.setState({matches: this.state.matches + 1});
           if (this.state.matches === MATCHES_TO_WIN){
             this.updateBestScore(this.state.score + SCORE_MOD_PLUS);
-            outputLocalStorage();
+            if (DEBUG_MODE) {outputLocalStorage();}
           }
         } else {
           BOARD_LOCKED = true;
-          this.updateScore(SCORE_MOD_MINUS);
+          this.changeScore(SCORE_MOD_MINUS);
           setTimeout(() => {
             this.setState({freezeCards:true});
             BOARD_LOCKED = false;
@@ -201,7 +221,7 @@ class Game extends React.Component{
       }
     }
   
-    updateScore(value){
+    changeScore(value){
       if (value > 0) {
         this.setState({score: this.state.score + value});
       } else {
@@ -212,13 +232,13 @@ class Game extends React.Component{
     updateBestScore(yourScore){
       if (parseInt(yourScore) > this.state.bestScore){
         this.setState({bestScore: parseInt(yourScore)});
-        localStorage.setItem(CARDS.length / 2,yourScore.toString());
+        localStorage.setItem("bestScoreFor_" + GAME_DECK.length / 2, yourScore.toString());
       }
     }
 
     render(){
       if (this.state.freezeCards === true){
-        switchClassOnAllCards(FLIP_CLASS, DEFAULT_CLASS)
+        switchClassOnCards(FLIP_CLASS, DEFAULT_CLASS)
         this.setState({freezeCards: false});
       }
 
@@ -234,11 +254,12 @@ class Game extends React.Component{
                 <option value="8">8 pairs</option>
                 <option value="10">10 pairs</option>
               </select>
-              <input id="new-game" type="submit" value="NEW" />
+              <input id="new-game" type="submit" value="NEW GAME" />
+              <input id="clear-best" type="button" value="CLEAR BEST" onClick={this.clearBestScores} />
             </form>
           </div>
           <div id="board" key={this.state.gameID}>
-            {CARDS.map((card,index) => (
+            {GAME_DECK.map((card,index) => (
             <Card 
               key={index}
               clickHandler={this.clickHandler}
@@ -246,6 +267,7 @@ class Game extends React.Component{
               data={card.data}
               class={card.class}
               path={card.path}
+              DEBUG_MODE={DEBUG_MODE}
             />
             ))}            
           </div>

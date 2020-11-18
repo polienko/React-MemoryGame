@@ -24,7 +24,13 @@ div#errors {
 }
 
 #new-game{
-  width: 80px;
+  width: 90px;
+  margin-left:10px;
+  height:inherit;
+}
+
+#clear-best{
+  width: 100px;
   margin-left:10px;
   height:inherit;
 }
@@ -83,4 +89,29 @@ img{
   transform: rotateY(180deg);
   transform-style: preserve-3d;
   cursor:default;
+}
+
+.card_debug{
+  transform: scale(1);
+  transition: transform .1s;
+  cursor:pointer;
+  max-width:92px; /* (widthOfPic + 2* border) */
+  border: 3px solid black;
+  border-radius: 5px;
+}
+
+.card_debug.flip_debug {
+  transform: rotateY(180deg);
+  transform-style: preserve-3d;
+  cursor:default;
+  border: 3px solid red;
+  border-radius: 5px;
+}
+
+.card_debug.match_debug{
+  transform: rotateY(180deg);
+  transform-style: preserve-3d;
+  cursor:default;
+  border: 3px solid green;
+  border-radius: 5px;
 }

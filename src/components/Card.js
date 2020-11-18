@@ -18,7 +18,11 @@ class Card extends React.Component{
       return(
         <div className={this.props.class} key={this.props.index} onClick={this.cardHandler} >
           <img className="card-front" alt="" src={this.props.path} data-card={this.props.data} draggable="false" />
+          {this.props.DEBUG_MODE ? 
+          <img className="card-back" alt="" src={this.props.path} alt="" data-card={this.props.data} draggable="false" /> :
           <img className="card-back" alt="" src={img_cover} alt="" data-card={this.props.data} draggable="false" />
+          }
+          
         </div>
       );
     }
