@@ -77,14 +77,10 @@ img{
   transform: rotateY(180deg);
   transform-style: preserve-3d;
   cursor:default;
-  border-radius: 5px;
-  border: 3px solid red;
 }
 
 .card.match{
   transform: rotateY(180deg);
   transform-style: preserve-3d;
   cursor:default;
-  border-radius: 5px;
-  border: 3px solid green;
 }
