@@ -1,0 +1,21 @@
+#board_6{
+  display:grid;
+  grid-template-columns: repeat(4, auto);
+  grid-template-rows: repeat(3, 85px);
+  grid-gap:3px;
+  max-width:376px;
+}
+#board_12{
+  display:grid;
+  grid-template-columns: repeat(4, auto);
+  grid-template-rows: repeat(6, 85px);
+  grid-gap:3px;
+  max-width:376px;
+}
+#board_24{
+  display:grid;
+  grid-template-columns: repeat(6, auto);
+  grid-template-rows: repeat(8, 55px);
+  grid-gap:3px;
+  max-width:376px;
+}

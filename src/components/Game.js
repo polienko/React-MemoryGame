@@ -1,5 +1,6 @@
 import React from "react";
-import Card from './Card';
+import Board from './Board';
+import './Game.css';
 
 import img_1 from "../img/1.png";
 import img_2 from "../img/2.png";
@@ -11,6 +12,20 @@ import img_7 from "../img/7.png";
 import img_8 from "../img/8.png";
 import img_9 from "../img/9.png";
 import img_10 from "../img/10.png";
+import img_11 from "../img/11.png";
+import img_12 from "../img/12.png";
+import img_13 from "../img/13.png";
+import img_14 from "../img/14.png";
+import img_15 from "../img/15.png";
+import img_16 from "../img/16.png";
+import img_17 from "../img/17.png";
+import img_18 from "../img/18.png";
+import img_19 from "../img/19.png";
+import img_20 from "../img/20.png";
+import img_21 from "../img/21.png";
+import img_22 from "../img/22.png";
+import img_23 from "../img/23.png";
+import img_24 from "../img/24.png";
 
 const DEBUG_MODE = false;
 
@@ -24,7 +39,7 @@ if (DEBUG_MODE){
   FLIP_CLASS = "card_debug flip_debug";
 }
 
-const DEFAULT_GAMEMODE = 4;
+const DEFAULT_GAMEMODE = 6;
 const SHOW_SECOND_CARD_TIME = 500;
 
 const SCORE_MOD_PLUS = 50;
@@ -40,7 +55,21 @@ let UNIQUE_CARDS = [
   {data: "7", class: DEFAULT_CLASS, path: img_7},
   {data: "8", class: DEFAULT_CLASS, path: img_8},
   {data: "9", class: DEFAULT_CLASS, path: img_9},
-  {data: "10", class: DEFAULT_CLASS, path: img_10}
+  {data: "10", class: DEFAULT_CLASS, path: img_10},
+  {data: "11", class: DEFAULT_CLASS, path: img_11},
+  {data: "12", class: DEFAULT_CLASS, path: img_12},
+  {data: "13", class: DEFAULT_CLASS, path: img_13},
+  {data: "14", class: DEFAULT_CLASS, path: img_14},
+  {data: "15", class: DEFAULT_CLASS, path: img_15},
+  {data: "16", class: DEFAULT_CLASS, path: img_16},
+  {data: "17", class: DEFAULT_CLASS, path: img_17},
+  {data: "18", class: DEFAULT_CLASS, path: img_18},
+  {data: "19", class: DEFAULT_CLASS, path: img_19},
+  {data: "20", class: DEFAULT_CLASS, path: img_20},
+  {data: "21", class: DEFAULT_CLASS, path: img_21},
+  {data: "22", class: DEFAULT_CLASS, path: img_22},
+  {data: "23", class: DEFAULT_CLASS, path: img_23},
+  {data: "24", class: DEFAULT_CLASS, path: img_24},
 ];
 
 let FULL_CARD_DECK = [];
@@ -170,14 +199,13 @@ class Game extends React.Component{
       switchClassToFlipped(clickedCard);
       
       if (this.state.click === 2) {
+        // ADD CARDS TO CHECK
         let checkTheseCards=[];
         for (const [key, someCard] of Object.entries(GAME_DECK)){
             if (someCard.class === FLIP_CLASS){
               checkTheseCards.push(someCard);
             }
         }
-
-        // ADD CARDS TO CHECK
         let firstCard = null;
         let secondCard = null;
         for (const [key, card] of Object.entries(checkTheseCards)){
@@ -249,28 +277,21 @@ class Game extends React.Component{
           <div id="new-game-block">
             <form id="bar" onSubmit={this.newGame}>
               <select id="gamemode" name="gamemode">
-                <option value="4">4 pairs</option>
                 <option value="6">6 pairs</option>
-                <option value="8">8 pairs</option>
-                <option value="10">10 pairs</option>
+                <option value="12">12 pairs</option>
+                <option value="24">24 pairs</option>
               </select>
               <input id="new-game" type="submit" value="NEW GAME" />
               <input id="clear-best" type="button" value="CLEAR BEST" onClick={this.clearBestScores} />
             </form>
           </div>
-          <div id="board" key={this.state.gameID}>
-            {GAME_DECK.map((card,index) => (
-            <Card 
-              key={index}
-              clickHandler={this.clickHandler}
-              index={index}
-              data={card.data}
-              class={card.class}
-              path={card.path}
-              DEBUG_MODE={DEBUG_MODE}
-            />
-            ))}            
-          </div>
+          <Board 
+            GAME_DECK={GAME_DECK}
+            boardSize={GAME_DECK.length / 2}
+            clickHandler={this.clickHandler}
+            DEBUG_MODE={DEBUG_MODE}
+          />
+
         </div>
       );
     }

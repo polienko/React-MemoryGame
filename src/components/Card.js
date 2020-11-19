@@ -1,6 +1,6 @@
 import React from "react";
-
 import img_cover from "../img/cover.png";
+import './Card.css';
 
 class Card extends React.Component{
     constructor(props){
@@ -22,7 +22,6 @@ class Card extends React.Component{
           <img className="card-back" alt="" src={this.props.path} alt="" data-card={this.props.data} draggable="false" /> :
           <img className="card-back" alt="" src={img_cover} alt="" data-card={this.props.data} draggable="false" />
           }
-          
         </div>
       );
     }
