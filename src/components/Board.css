@@ -19,3 +19,13 @@
   grid-gap:3px;
   max-width:376px;
 }
+
+@media screen and (min-width: 950px){
+  #board_24{
+    display:grid;
+    grid-template-columns: repeat(6, auto);
+    grid-template-rows: repeat(8, 85px);
+    grid-gap:3px;
+    max-width:564px;
+  }
+}
