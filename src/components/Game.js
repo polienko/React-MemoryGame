@@ -39,7 +39,7 @@ if (DEBUG_MODE){
   FLIP_CLASS = "card_debug flip_debug";
 }
 
-const DEFAULT_GAMEMODE = 6;
+const DEFAULT_GAMEMODE = 24;
 const SHOW_SECOND_CARD_TIME = 500;
 
 const SCORE_MOD_PLUS = 50;
@@ -277,9 +277,9 @@ class Game extends React.Component{
           <div id="new-game-block">
             <form id="bar" onSubmit={this.newGame}>
               <select id="gamemode" name="gamemode">
-                <option value="6">6 pairs</option>
-                <option value="12">12 pairs</option>
                 <option value="24">24 pairs</option>
+                <option value="12">12 pairs</option>
+                <option value="6">6 pairs</option>
               </select>
               <input id="new-game" type="submit" value="NEW GAME" />
               <input id="clear-best" type="button" value="CLEAR BEST" onClick={this.clearBestScores} />
