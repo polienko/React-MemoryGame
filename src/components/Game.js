@@ -2,32 +2,29 @@ import React from "react";
 import Board from './Board';
 import './Game.css';
 
-import img_1 from "../img/1.png";
-import img_2 from "../img/2.png";
-import img_3 from "../img/3.png";
-import img_4 from "../img/4.png";
-import img_5 from "../img/5.png";
-import img_6 from "../img/6.png";
-import img_7 from "../img/7.png";
-import img_8 from "../img/8.png";
-import img_9 from "../img/9.png";
-import img_10 from "../img/10.png";
-import img_11 from "../img/11.png";
-import img_12 from "../img/12.png";
-import img_13 from "../img/13.png";
-import img_14 from "../img/14.png";
-import img_15 from "../img/15.png";
-import img_16 from "../img/16.png";
-import img_17 from "../img/17.png";
-import img_18 from "../img/18.png";
-import img_19 from "../img/19.png";
-import img_20 from "../img/20.png";
-import img_21 from "../img/21.png";
-import img_22 from "../img/22.png";
-import img_23 from "../img/23.png";
-import img_24 from "../img/24.png";
-
 const DEBUG_MODE = false;
+
+//IMPORT IMAGES TO OBJECT
+let images = {};
+for (let i = 1; i <= 24; i++) {
+  let currentImage = require('../img/'+ i +'.png').default;
+  Object.defineProperty(images, i, {
+    __proto__: null,
+    value: currentImage
+  });
+}
+console.log(images);
+
+/* // NOT WORKING
+for (let prop in images){
+  console.log(images[prop]);
+}
+
+for (const [key, path] of Object.entries(images)){
+  console.log(path);
+}
+*/
+
 
 let DEFAULT_CLASS = "card";
 let MATCH_CLASS = "card match";
@@ -46,30 +43,30 @@ const SCORE_MOD_PLUS = 50;
 const SCORE_MOD_MINUS = -10;
 
 let UNIQUE_CARDS = [
-  {data: "1", class: DEFAULT_CLASS, path: img_1},
-  {data: "2", class: DEFAULT_CLASS, path: img_2},
-  {data: "3", class: DEFAULT_CLASS, path: img_3},
-  {data: "4", class: DEFAULT_CLASS, path: img_4},
-  {data: "5", class: DEFAULT_CLASS, path: img_5},
-  {data: "6", class: DEFAULT_CLASS, path: img_6},
-  {data: "7", class: DEFAULT_CLASS, path: img_7},
-  {data: "8", class: DEFAULT_CLASS, path: img_8},
-  {data: "9", class: DEFAULT_CLASS, path: img_9},
-  {data: "10", class: DEFAULT_CLASS, path: img_10},
-  {data: "11", class: DEFAULT_CLASS, path: img_11},
-  {data: "12", class: DEFAULT_CLASS, path: img_12},
-  {data: "13", class: DEFAULT_CLASS, path: img_13},
-  {data: "14", class: DEFAULT_CLASS, path: img_14},
-  {data: "15", class: DEFAULT_CLASS, path: img_15},
-  {data: "16", class: DEFAULT_CLASS, path: img_16},
-  {data: "17", class: DEFAULT_CLASS, path: img_17},
-  {data: "18", class: DEFAULT_CLASS, path: img_18},
-  {data: "19", class: DEFAULT_CLASS, path: img_19},
-  {data: "20", class: DEFAULT_CLASS, path: img_20},
-  {data: "21", class: DEFAULT_CLASS, path: img_21},
-  {data: "22", class: DEFAULT_CLASS, path: img_22},
-  {data: "23", class: DEFAULT_CLASS, path: img_23},
-  {data: "24", class: DEFAULT_CLASS, path: img_24},
+  {data: "1", class: DEFAULT_CLASS, path: images[1]},
+  {data: "2", class: DEFAULT_CLASS, path: images[2]},
+  {data: "3", class: DEFAULT_CLASS, path: images[3]},
+  {data: "4", class: DEFAULT_CLASS, path: images[4]},
+  {data: "5", class: DEFAULT_CLASS, path: images[5]},
+  {data: "6", class: DEFAULT_CLASS, path: images[6]},
+  {data: "7", class: DEFAULT_CLASS, path: images[7]},
+  {data: "8", class: DEFAULT_CLASS, path: images[8]},
+  {data: "9", class: DEFAULT_CLASS, path: images[9]},
+  {data: "10", class: DEFAULT_CLASS, path: images[10]},
+  {data: "11", class: DEFAULT_CLASS, path: images[11]},
+  {data: "12", class: DEFAULT_CLASS, path: images[12]},
+  {data: "13", class: DEFAULT_CLASS, path: images[13]},
+  {data: "14", class: DEFAULT_CLASS, path: images[14]},
+  {data: "15", class: DEFAULT_CLASS, path: images[15]},
+  {data: "16", class: DEFAULT_CLASS, path: images[16]},
+  {data: "17", class: DEFAULT_CLASS, path: images[17]},
+  {data: "18", class: DEFAULT_CLASS, path: images[18]},
+  {data: "19", class: DEFAULT_CLASS, path: images[19]},
+  {data: "20", class: DEFAULT_CLASS, path: images[20]},
+  {data: "21", class: DEFAULT_CLASS, path: images[21]},
+  {data: "22", class: DEFAULT_CLASS, path: images[22]},
+  {data: "23", class: DEFAULT_CLASS, path: images[23]},
+  {data: "24", class: DEFAULT_CLASS, path: images[24]},
 ];
 
 let FULL_CARD_DECK = [];
