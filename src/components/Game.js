@@ -4,27 +4,12 @@ import './Game.css';
 
 const DEBUG_MODE = false;
 
-//IMPORT IMAGES TO OBJECT
-let images = {};
-for (let i = 1; i <= 24; i++) {
-  let currentImage = require('../img/'+ i +'.png').default;
-  Object.defineProperty(images, i, {
-    __proto__: null,
-    value: currentImage
-  });
-}
-console.log(images);
+const DEFAULT_GAMEMODE = 24;
 
-/* // NOT WORKING
-for (let prop in images){
-  console.log(images[prop]);
-}
+const SHOW_SECOND_CARD_TIME = 500;
 
-for (const [key, path] of Object.entries(images)){
-  console.log(path);
-}
-*/
-
+const SCORE_MOD_PLUS = 50;
+const SCORE_MOD_MINUS = -10;
 
 let DEFAULT_CLASS = "card";
 let MATCH_CLASS = "card match";
@@ -36,43 +21,31 @@ if (DEBUG_MODE){
   FLIP_CLASS = "card_debug flip_debug";
 }
 
-const DEFAULT_GAMEMODE = 24;
-const SHOW_SECOND_CARD_TIME = 500;
+//REPLACE FOR LONG IMAGES IMPORT
+let images = {};
+for (let i = 1; i <= 24; i++) {
+  let currentImage = require('../img/'+ i +'.png').default;
+  Object.defineProperty(images, i, {
+    enumerable: true,
+    value: currentImage
+  });
+}
 
-const SCORE_MOD_PLUS = 50;
-const SCORE_MOD_MINUS = -10;
-
-let UNIQUE_CARDS = [
-  {data: "1", class: DEFAULT_CLASS, path: images[1]},
-  {data: "2", class: DEFAULT_CLASS, path: images[2]},
-  {data: "3", class: DEFAULT_CLASS, path: images[3]},
-  {data: "4", class: DEFAULT_CLASS, path: images[4]},
-  {data: "5", class: DEFAULT_CLASS, path: images[5]},
-  {data: "6", class: DEFAULT_CLASS, path: images[6]},
-  {data: "7", class: DEFAULT_CLASS, path: images[7]},
-  {data: "8", class: DEFAULT_CLASS, path: images[8]},
-  {data: "9", class: DEFAULT_CLASS, path: images[9]},
-  {data: "10", class: DEFAULT_CLASS, path: images[10]},
-  {data: "11", class: DEFAULT_CLASS, path: images[11]},
-  {data: "12", class: DEFAULT_CLASS, path: images[12]},
-  {data: "13", class: DEFAULT_CLASS, path: images[13]},
-  {data: "14", class: DEFAULT_CLASS, path: images[14]},
-  {data: "15", class: DEFAULT_CLASS, path: images[15]},
-  {data: "16", class: DEFAULT_CLASS, path: images[16]},
-  {data: "17", class: DEFAULT_CLASS, path: images[17]},
-  {data: "18", class: DEFAULT_CLASS, path: images[18]},
-  {data: "19", class: DEFAULT_CLASS, path: images[19]},
-  {data: "20", class: DEFAULT_CLASS, path: images[20]},
-  {data: "21", class: DEFAULT_CLASS, path: images[21]},
-  {data: "22", class: DEFAULT_CLASS, path: images[22]},
-  {data: "23", class: DEFAULT_CLASS, path: images[23]},
-  {data: "24", class: DEFAULT_CLASS, path: images[24]},
-];
+//REPLACE FOR LONG CARDS DESCRIPTION
+let UNIQUE_CARDS = [];
+for (const [key, path] of Object.entries(images)){
+  let cardObj = {};
+  cardObj.data = key.toString();
+  cardObj.class = DEFAULT_CLASS;
+  cardObj.path = path;
+  UNIQUE_CARDS.push(cardObj);
+}
 
 let FULL_CARD_DECK = [];
 UNIQUE_CARDS.map((card) => (
   FULL_CARD_DECK.push(card, Object.assign({}, card)))
 );
+
 let GAME_DECK = FULL_CARD_DECK.slice(0, DEFAULT_GAMEMODE * 2);
 GAME_DECK = shuffleCards(GAME_DECK);
 
