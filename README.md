@@ -1,6 +1,4 @@
-# Demo
-
-Play: [polienko.github.io/react-memory-game](http://polienko.github.io/react-memory-game/)
+# Play: [polienko.github.io/react-memory-game](http://polienko.github.io/react-memory-game/)
 
 ![Screenshot](https://github.com/polienko/react-memory-game/blob/master/screenshot.png)
 
